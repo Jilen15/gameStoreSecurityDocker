@@ -8,7 +8,7 @@ class Comment{
     }
 
     static async findById(id) {
-        const result = await pool.query("SELECT c.*, g.name, u.username FROM comments as c INNER JOIN games as g ON c.id_game = g.id_game INNER JOIN users as u ON c.id_user = u.id_user WHERE g.id_game = $1", [id]);
+        const result = await pool.query("SELECT c.*, g.name, u.username FROM comments as c INNER JOIN games as g ON c.id_game = g.id_game INNER JOIN users as u ON c.id_user = u.id_user WHERE c.id_comment = $1", [id]);
         return result.rows[0];
     }
 
