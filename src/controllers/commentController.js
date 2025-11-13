@@ -1,17 +1,16 @@
 import Comment from "../models/comment.model.js";
 
 class CommentController {
-    static async listComments(req, res) {
+    static async listComments(req, res, next) {
         try {
             const comments = await Comment.findAll();
             res.json(comments);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
     
-    static async getComment(req, res) {
+    static async getComment(req, res, next) {
         try {
             const {id} = req.params;
             const comment =  await Comment.findById(Number(id));
@@ -19,24 +18,22 @@ class CommentController {
                 return res.status(404).json({ error: "Commentaire non trouvé" });
             }
             return res.statut(200).json(comment);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 
-    static async createComment(req, res) {
+    static async createComment(req, res, next) {
         try {
             const { content, note, type } = req.body;
             const newComment = await Comment.create(content, note, type);
             return res.status(201).json(newComment);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 
-    static async updateComment(req, res) {
+    static async updateComment(req, res, next) {
         try {
             const { id } = req.params;
             const { content, note, type } = req.body;
@@ -45,20 +42,18 @@ class CommentController {
                 return res.status(404).json({ error: "Commentaire non trouvé" });
             }
             return res.status(200).json(updatedComment);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 
-    static async deleteComment(req, res) {
+    static async deleteComment(req, res, next) {
         try {
             const { id } = req.params;
             await Comment.delete(Number(id));
             res.status(204).end();
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 }

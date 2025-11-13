@@ -23,13 +23,13 @@ app.use(
 import userRoutes from "./routes/userRoutes.js";
 app.use("/api/users", userRoutes);
 
-const gameRoutes = require("./routes/gameRoutes.js");
+import gameRoutes from "./routes/gameRoutes.js";
 app.use("/api/games", gameRoutes);
 
-const commentRoutes = require("./routes/commentRoutes.js");
+import commentRoutes from "./routes/commentRoutes.js";
 app.use("/api/comments", commentRoutes);
 
-const categoryRoutes = require("./routes/categoryRoutes.js");
+import categoryRoutes from "./routes/categoryRoutes.js";
 app.use("/api/categories", categoryRoutes);
 
 import profileRoutes from "./routes/profileRoutes.js";
