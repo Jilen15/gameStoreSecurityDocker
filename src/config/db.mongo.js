@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-dotenv.config();
+if (process.env.NODE_ENV === "test") {
+    dotenv.config({ path: ".env.test" });
+    console.log("Chargement des variables depuis .env.test");
+} else {
+    dotenv.config();
+    console.log("Chargement des variables depuis .env");
+}
 
 const connectMongo = async () => {
   try {
@@ -15,4 +20,4 @@ const connectMongo = async () => {
   }
 };
 
-module.exports=connectMongo;
+export default connectMongo;

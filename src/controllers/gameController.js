@@ -4,7 +4,7 @@ class GameController {
     static async listGames(req, res, next) {
         try {
             const games = await Game.findAll();
-            res.json(games);
+            res.status(200).json(games);
         } catch (err) {
             next(err);
         }
@@ -17,7 +17,7 @@ class GameController {
             if (!game) {
                 return res.status(404).json({ error: "Jeu non trouvé" });
             }
-            return res.statut(200).json(game);
+            return res.status(200).json(game);
         } catch (err) {
             next(err);
         }

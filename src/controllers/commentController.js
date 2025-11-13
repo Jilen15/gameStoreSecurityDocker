@@ -4,7 +4,7 @@ class CommentController {
     static async listComments(req, res, next) {
         try {
             const comments = await Comment.findAll();
-            res.json(comments);
+            res.status(200).json(comments);
         } catch (err) {
             next(err);
         }
@@ -17,7 +17,7 @@ class CommentController {
             if (!comment) {
                 return res.status(404).json({ error: "Commentaire non trouvé" });
             }
-            return res.statut(200).json(comment);
+            return res.status(200).json(comment);
         } catch (err) {
             next(err);
         }
@@ -25,8 +25,8 @@ class CommentController {
 
     static async createComment(req, res, next) {
         try {
-            const { content, note, type } = req.body;
-            const newComment = await Comment.create(content, note, type);
+            const { content, note, type, id_user, id_game } = req.body;
+            const newComment = await Comment.create(content, note, type, id_user, id_game);
             return res.status(201).json(newComment);
         } catch (err) {
             next(err);

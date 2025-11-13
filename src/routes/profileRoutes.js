@@ -1,5 +1,7 @@
 import express from "express";
 import ProfileController from "../controllers/profileController.js";
+import { authenticateToken } from "../middlewares/Auth.js";
+import { authorizeRoles } from "../middlewares/Roles.js";
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ const router = express.Router();
  *      404:
  *        description: Aucun profil trouvé
  */
-router.get("/", ProfileController.listProfiles);
+router.get("/", authenticateToken, ProfileController.listProfiles);
 
 /**
  * @openapi
@@ -34,7 +36,7 @@ router.get("/", ProfileController.listProfiles);
  *      404:
  *        description: Profil non trouvé
  */
-router.get("/:id", ProfileController.getProfile);
+router.get("/:id", authenticateToken, ProfileController.getProfile);
 
 /**
  * @openapi
@@ -76,7 +78,7 @@ router.get("/:id", ProfileController.getProfile);
  *      400:
  *        description: Données invalides ou userId manquant
  */
-router.post("/", ProfileController.createProfile);
+router.post("/", authenticateToken, ProfileController.createProfile);
 
 /**
  * @openapi
@@ -123,7 +125,7 @@ router.post("/", ProfileController.createProfile);
  *      404:
  *        description: Profil non trouvé
  */
-router.put("/:id", ProfileController.updateProfile);
+router.put("/:id", authenticateToken, ProfileController.updateProfile);
 
 /**
  * @openapi
@@ -143,6 +145,6 @@ router.put("/:id", ProfileController.updateProfile);
  *      404:
  *        description: Profil non trouvé
  */
-router.delete("/:id", ProfileController.deleteProfile);
+router.delete("/:id", authenticateToken, authorizeRoles("admin"), ProfileController.deleteProfile);
 
 export default router;

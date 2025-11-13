@@ -12,16 +12,16 @@ class Comment{
         return result.rows[0];
     }
 
-    static async create( content, note, type ){
-        const result = await pool.query("INSERT INTO comments(content, note, type) VALUES ($1, $2, $3) RETURNING ",
-            [content, note, type]
+    static async create( content, note, type, id_user, id_game ){
+        const result = await pool.query("INSERT INTO comments(content, note, type, id_user, id_game) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [content, note, type, id_user, id_game]
         );
         return result.rows[0];
     }
 
-    static async update(id, { content, note, type }) {
-        const result = await pool.query("UPDATE comments SET content = $1, note = $2, type = $3 WHERE id = $4 RETURNING",
-            [content, note, type, id]
+    static async update(id, { content, note, type, id_user, id_game }) {
+        const result = await pool.query("UPDATE comments SET content = $1, note = $2, type = $3, id_user = $4, id_game = $5 WHERE id = $6 RETURNING *",
+            [content, note, type, id_user, id_game, id]
         );
         return result.rows[0];
     }

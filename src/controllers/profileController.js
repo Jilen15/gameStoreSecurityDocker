@@ -1,4 +1,4 @@
-const Profile = require("../models/Profiles.model.js")
+import Profile from "../models/Profiles.model.js";
 
 class ProfileController{
 
@@ -67,4 +67,4 @@ class ProfileController{
     }
 }
 
-module.exports=ProfileController;
+export default ProfileController;

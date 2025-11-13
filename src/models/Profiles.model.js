@@ -1,40 +1,41 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const profileSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    type: Number,
+    required: true,
+    unique: true,
   },
 
   gamesList: [
     {
       name: {
-        type: String,
-        required: true
-      }
-    }
+        type: String
+      },
+    },
   ],
 
   commentHistory: [
     {
       gameId: {
-        type: mongoose.Schema.Types.ObjectId, 
-        required: true
+        type: Number,
+        required: true,
+        unique: true,
       },
       note: {
         type: Number,
         min: 0,
-        max: 10
+        max: 10,
       },
       content: {
-        type: String
+        type: String,
       },
       type: {
         type: String,
-        default: "review"
-      }
-    }
-  ]
+        default: "review",
+      },
+    },
+  ],
 });
 
-module.exports = mongoose.model("Profile", profileSchema);
+export default mongoose.model("Profile", profileSchema);

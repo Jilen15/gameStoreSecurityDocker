@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import errorHandler from "./middlewares/Errors.js";
+import connectMongo from "./config/db.mongo.js";
 
 const app = express();
+connectMongo();
 
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
