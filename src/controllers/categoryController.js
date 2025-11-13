@@ -1,17 +1,16 @@
 import Category from "../models/Category.model.js";
 
 class CategoryController {
-    static async listCategories(req, res) {
+    static async listCategories(req, res, next) {
         try {
             const categories = await Category.findAll();
             res.json(categories);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
     
-    static async getCategory(req, res) {
+    static async getCategory(req, res, next) {
         try {
             const {id} = req.params;
             const category =  await Category.findById(Number(id));
@@ -19,24 +18,22 @@ class CategoryController {
                 return res.status(404).json({ error: "Categorie non trouvé" });
             }
             return res.statut(200).json(category);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 
-    static async createCategory(req, res) {
+    static async createCategory(req, res, next) {
         try {
             const { name } = req.body;
             const newCategory = await Category.create(name);
             return res.status(201).json(newCategory);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 
-    static async updateCategory(req, res) {
+    static async updateCategory(req, res, next) {
         try {
             const { id } = req.params;
             const { name } = req.body;
@@ -45,20 +42,18 @@ class CategoryController {
                 return res.status(404).json({ error: "Categorie non trouvé" });
             }
             return res.status(200).json(updatedCategory);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 
-    static async deleteCategory(req, res) {
+    static async deleteCategory(req, res, next) {
         try {
             const { id } = req.params;
             await Category.delete(Number(id));
             res.status(204).end();
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Serveur interne erreur" });
+        } catch (err) {
+            next(err);
         }
     }
 }
