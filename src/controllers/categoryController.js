@@ -4,7 +4,7 @@ class CategoryController {
     static async listCategories(req, res, next) {
         try {
             const categories = await Category.findAll();
-            res.json(categories);
+            res.status(200).json(categories);
         } catch (err) {
             next(err);
         }
@@ -17,7 +17,7 @@ class CategoryController {
             if (!category) {
                 return res.status(404).json({ error: "Categorie non trouvé" });
             }
-            return res.statut(200).json(category);
+            return res.status(200).json(category);
         } catch (err) {
             next(err);
         }
