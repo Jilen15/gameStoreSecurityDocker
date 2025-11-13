@@ -8,7 +8,12 @@ class User{
     }
 
     static async findById(id) {
-        const result = await pool.query("SELECT * FROM users WHERE id_user = $1", [id]);
+        const result = await pool.query(`SELECT u.*, r.name AS roleName
+                                         FROM users AS u 
+                                         INNER JOIN roles AS r 
+                                         ON u.id_role = r.id_role 
+                                         WHERE id_user = $1`, 
+                                         [id]);
         return result.rows[0];
     }
 
@@ -17,9 +22,9 @@ class User{
         return result.rows[0];
     }
 
-    static async create( username, email, password ){
-        const result = await pool.query("INSERT INTO users(username, email, password) VALUES ($1, $2, $3) RETURNING *",
-            [username, email, password]
+    static async create( username, email, password, id_role ){
+        const result = await pool.query("INSERT INTO users(username, email, password, id_role) VALUES ($1, $2, $3, $4) RETURNING *",
+            [username, email, password, id_role]
         );
         return result.rows[0];
     }

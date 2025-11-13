@@ -41,7 +41,7 @@ class UserController{
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const newUser = await User.create(username, email, hashedPassword);
+            const newUser = await User.create(username, email, hashedPassword, 2);
 
             res.status(201).json({ message: "Utilisateur créé avec succès", user: newUser });
         } catch (e) {
@@ -65,7 +65,7 @@ class UserController{
             }
 
             const token = jwt.sign(
-                { id: user.id_user, email: user.email },
+                { id: user.id_user, email: user.email, role: user.roleName },
                 JWT_SECRET,
                 { expiresIn: "1h" }
             );
