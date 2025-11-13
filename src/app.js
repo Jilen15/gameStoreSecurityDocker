@@ -3,6 +3,8 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import errorHandler from "./middlewares/Errors.js";
 import connectMongo from "./config/db.mongo.js";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger.js";
 
 const app = express();
 connectMongo();
@@ -36,6 +38,8 @@ app.use("/api/categories", categoryRoutes);
 
 import profileRoutes from "./routes/profileRoutes.js";
 app.use("/api/profiles", profileRoutes);
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => res.json({ message: "API OK" }));
 
