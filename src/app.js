@@ -32,6 +32,9 @@ app.use("/api/comments", commentRoutes);
 const categoryRoutes = require("./routes/categoryRoutes.js");
 app.use("/api/categories", categoryRoutes);
 
+import profileRoutes from "./routes/profileRoutes.js";
+app.use("/api/profiles", profileRoutes);
+
 app.get("/", (req, res) => res.json({ message: "API OK" }));
 
 app.use(errorHandler);
