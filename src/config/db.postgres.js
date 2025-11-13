@@ -1,6 +1,13 @@
 import pg from "pg";
 import dotenv from "dotenv";
-dotenv.config();
+
+if (process.env.NODE_ENV === "test") {
+    dotenv.config({ path: ".env.test" });
+    console.log("Chargement des variables depuis .env.test");
+} else {
+    dotenv.config();
+    console.log("Chargement des variables depuis .env");
+}
 
 const { Pool } = pg;
 
