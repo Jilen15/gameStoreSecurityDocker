@@ -23,6 +23,15 @@ app.use(
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/api/users", userRoutes);
 
+const gameRoutes = require("./routes/gameRoutes.js");
+app.use("/api/games", gameRoutes);
+
+const commentRoutes = require("./routes/commentRoutes.js");
+app.use("/api/comments", commentRoutes);
+
+const categoryRoutes = require("./routes/categoryRoutes.js");
+app.use("/api/categories", categoryRoutes);
+
 app.get("/", (req, res) => res.json({ message: "API OK" }));
 
 app.use(errorHandler);
