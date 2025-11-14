@@ -50,7 +50,10 @@ class GameController {
     static async deleteGame(req, res, next) {
         try {
             const { id } = req.params;
-            await Game.delete(Number(id));
+            const deleted = await Game.delete(Number(id));
+
+            if (!deleted) return res.status(404).json({ message: "Jeu non trouvé" });
+            
             res.status(204).end();
         } catch (err) {
             next(err);

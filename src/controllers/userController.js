@@ -1,6 +1,4 @@
 import User from "../models/User.model.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret";
 
@@ -24,51 +22,6 @@ class UserController{
 
             return res.status(200).json({user});
         } catch (err) { 
-            next(err);
-        }
-    }
-
-    static async register(req, res, next) {
-        try {
-            const { username, email, password } = req.body;
-
-            const existingUser = await User.findByEmail(email);
-            if (existingUser) {
-                return res.status(400).json({ message: "Cet email est déjà utilisé." });
-            }
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            const newUser = await User.create(username, email, hashedPassword, 2);
-
-            res.status(201).json({ message: "Utilisateur créé avec succès", user: newUser });
-        } catch (err) {
-            next(err);
-        }
-    }
-
-    static async login(req, res, next) {
-        try {
-            const { email, password } = req.body;
-
-            const user = await User.findByEmail(email);
-            if (!user) {
-                return res.status(401).json({ message: "Identifiants invalides" });
-            }
-
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return res.status(401).json({ message: "Identifiants invalides" });
-            }
-
-            const token = jwt.sign(
-                { id: user.id_user, email: user.email, role: user.roleName },
-                JWT_SECRET,
-                { expiresIn: "1h" }
-            );
-
-            res.status(200).json({ message: "Connexion réussie", token });
-        } catch (err) {
             next(err);
         }
     }

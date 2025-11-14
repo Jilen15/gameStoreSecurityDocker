@@ -20,14 +20,15 @@ class Category{
     }
 
     static async update(id, { name }) {
-        const result = await pool.query("UPDATE categories SET name = $1 WHERE id = $2 RETURNING *",
+        const result = await pool.query("UPDATE categories SET name = $1 WHERE id_category = $2 RETURNING *",
             [name, id]
         );
         return result.rows[0];
     }
 
     static async delete(id) {
-        await pool.query("DELETE categories WHERE id = $1", [id]);
+        await pool.query("DELETE FROM categories WHERE id_category = $1", [id]);
+        return result.rowCount;
     }
 }
 

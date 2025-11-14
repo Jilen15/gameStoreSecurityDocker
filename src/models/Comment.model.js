@@ -20,14 +20,16 @@ class Comment{
     }
 
     static async update(id, { content, note, type, id_user, id_game }) {
-        const result = await pool.query("UPDATE comments SET content = $1, note = $2, type = $3, id_user = $4, id_game = $5 WHERE id = $6 RETURNING *",
+        const result = await pool.query(
+            "UPDATE comments SET content = $1, note = $2, type = $3, id_user = $4, id_game = $5 WHERE id_comment = $6 RETURNING *",
             [content, note, type, id_user, id_game, id]
         );
         return result.rows[0];
     }
 
     static async delete(id) {
-        await pool.query("DELETE comments WHERE id = $1", [id]);
+        await pool.query("DELETE FROM comments WHERE id_comment = $1", [id]);
+        return result.rowCount;
     }
 }
 

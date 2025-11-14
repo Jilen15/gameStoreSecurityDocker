@@ -11,18 +11,23 @@ connectMongo();
 
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-app.use(
-    rateLimit({
-        windowMs: 60*1000,
-        max: 10,
-        message: {
-            status: 429,
-            message: "Trop de requêtes. Réessayez dans une minute."
-        },
-        standardHeaders: true,
-        legacyHeaders: false
-    })
-);
+const limiter = rateLimit({
+    windowMs: 60*1000,
+    max: 10,
+    message: {
+        status: 429,
+        message: "Trop de requêtes. Réessayez dans une minute."
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+if (process.env.NODE_ENV !== "test") {
+    app.use(limiter);
+}
+
+import authRoutes from "./routes/authRoutes.js";
+app.use("/api/auth", authRoutes);
 
 import userRoutes from "./routes/userRoutes.js";
 app.use("/api/users", userRoutes);
