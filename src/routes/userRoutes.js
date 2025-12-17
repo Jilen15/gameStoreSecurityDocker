@@ -1,6 +1,6 @@
 import express from "express";
 import UserController from "../controllers/userController.js";
-import { authenticateToken } from "../middlewares/Auth.js";
+import { authenticateSession } from "../middlewares/Auth.js";
 import { authorizeRoles } from "../middlewares/Roles.js";
 
 const router = express.Router();
@@ -18,7 +18,7 @@ const router = express.Router();
  *      404:
  *        description: Aucun utilisateur trouvé
  */
-router.get("/", authenticateToken, authorizeRoles("admin"), UserController.listUsers);
+router.get("/", authenticateSession, authorizeRoles("admin"), UserController.listUsers);
 
 /**
  * @openapi
@@ -40,7 +40,7 @@ router.get("/", authenticateToken, authorizeRoles("admin"), UserController.listU
  *      404:
  *        description: Utilisateur non trouvé
  */
-router.get("/:id", authenticateToken, UserController.getUser);
+router.get("/:id", authenticateSession, UserController.getUser);
 
 /**
  * @openapi
@@ -75,7 +75,7 @@ router.get("/:id", authenticateToken, UserController.getUser);
  *      404:
  *        description: Utilisateur non trouvé
  */
-router.put("/:id", authenticateToken, authorizeRoles("admin"), UserController.updateUser);
+router.put("/:id", authenticateSession, authorizeRoles("admin"), UserController.updateUser);
 
 /**
  * @openapi
@@ -97,6 +97,6 @@ router.put("/:id", authenticateToken, authorizeRoles("admin"), UserController.up
  *      404:
  *        description: Utilisateur non trouvé
  */
-router.delete("/:id", authenticateToken, authorizeRoles("admin"), UserController.deleteUser);
+router.delete("/:id", authenticateSession, authorizeRoles("admin"), UserController.deleteUser);
 
 export default router;

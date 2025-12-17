@@ -1,4 +1,5 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import errorHandler from "./middlewares/Errors.js";
@@ -6,7 +7,10 @@ import connectMongo from "./config/db.mongo.js";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger.js";
 import helmet from "helmet";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 
+dotenv.config();
 const app = express();
 connectMongo();
 
@@ -32,7 +36,7 @@ app.use(
 //Configuration du rate limiter
 const limiter = rateLimit({
     windowMs: 60*1000,
-    max: 10,
+    max: 50,
     message: {
         status: 429,
         message: "Trop de requêtes. Réessayez dans une minute."
@@ -83,6 +87,26 @@ app.use(
         "connectSrc": ["'self'"],
         "styleSrc": ["'self'"]
       },
+    },
+  })
+);
+
+//Configuration de la session
+app.use(
+  session({
+    name: "sessionId",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 24 * 60 * 60,
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );

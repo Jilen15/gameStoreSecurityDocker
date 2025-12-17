@@ -37,7 +37,7 @@ router.post("/register", AuthController.register);
  * @openapi
  * /api/users/login:
  *  post:
- *    summary: Connecte un utilisateur existant et renvoie un token JWT
+ *    summary: Connecte un utilisateur existant et renvoie une session
  *    requestBody:
  *      required: true
  *      content:
@@ -59,5 +59,32 @@ router.post("/register", AuthController.register);
  *        description: Identifiants invalides
  */
 router.post("/login", AuthController.login);
+
+/**
+ * @openapi
+ * /api/users/logout:
+ *  post:
+ *    summary: Déconnecte un utilisateur existant et supprime sa session
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *              password:
+ *                type: string
+ *    responses:
+ *      200:
+ *        description: Déconnexion réussie
+ *      500:
+ *        description: Erreur lors de la déconnexion
+ */
+router.post("/logout", AuthController.logout);
 
 export default router;
