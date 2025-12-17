@@ -1,6 +1,6 @@
 import express from "express";
 import CategoryController from "../controllers/categoryController.js";
-import { authenticateToken } from "../middlewares/Auth.js";
+import { authenticateSession } from "../middlewares/Auth.js";
 import { authorizeRoles } from "../middlewares/Roles.js";
 
 const router = express.Router();
@@ -16,7 +16,7 @@ const router = express.Router();
  *       404:
  *         description: Catégories non trouvées
  */
-router.get("/", authenticateToken, CategoryController.listCategories);
+router.get("/", authenticateSession, CategoryController.listCategories);
 
 /**
  * @openapi
@@ -36,7 +36,7 @@ router.get("/", authenticateToken, CategoryController.listCategories);
  *       404:
  *         description: Catégorie non trouvée
  */
-router.get("/:id", authenticateToken, CategoryController.getCategory);
+router.get("/:id", authenticateSession, CategoryController.getCategory);
 
 /**
  * @openapi
@@ -61,7 +61,7 @@ router.get("/:id", authenticateToken, CategoryController.getCategory);
  *       500:
  *         description: Erreur serveur interne
  */
-router.post("/", authenticateToken, authorizeRoles("admin"), CategoryController.createCategory);
+router.post("/", authenticateSession, authorizeRoles("admin"), CategoryController.createCategory);
 
 /**
  * @openapi
@@ -93,7 +93,7 @@ router.post("/", authenticateToken, authorizeRoles("admin"), CategoryController.
  *       404:
  *         description: Catégorie non trouvée
  */
-router.put("/:id", authenticateToken, authorizeRoles("admin"), CategoryController.updateCategory);
+router.put("/:id", authenticateSession, authorizeRoles("admin"), CategoryController.updateCategory);
 
 /**
  * @openapi
@@ -113,6 +113,6 @@ router.put("/:id", authenticateToken, authorizeRoles("admin"), CategoryControlle
  *       500:
  *         description: Erreur serveur interne
  */
-router.delete("/:id", authenticateToken, authorizeRoles("admin"), CategoryController.deleteCategory);
+router.delete("/:id", authenticateSession, authorizeRoles("admin"), CategoryController.deleteCategory);
 
 export default router;
