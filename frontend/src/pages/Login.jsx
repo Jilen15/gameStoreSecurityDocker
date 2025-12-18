@@ -9,13 +9,11 @@ export default function Login() {
 
 
 	function validateEmail(value) {
-		// General simple email validation (allows any domain)
 		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 		return re.test(value)
 	}
 
 	function validatePassword(value) {
-		// At least 12 chars, one uppercase, one digit, one special char
 		const len = value.length >= 12
 		const upper = /[A-Z]/.test(value)
 		const digit = /[0-9]/.test(value)
@@ -33,8 +31,7 @@ export default function Login() {
 		})
 		if (!emailOk || !passOk) return
 
-		// Call backend login endpoint
-		fetch('https://localhost:3000/api/users/login', {
+		fetch('https://localhost:3000/api/auth/login', {
             credentials: 'include',
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -48,7 +45,6 @@ export default function Login() {
 				return res.json()
 			})
 			.then((data) => {
-				// store token and navigate
 				if (data.token) {
 					localStorage.setItem('token', data.token)
 				}
@@ -83,7 +79,7 @@ export default function Login() {
 						onChange={(e) => setPassword(e.target.value)}
 						type="password"
 						required
-						placeholder="Au moins 12 caractères, 1 majuscule, chiffres, caractères spéciaux"
+						placeholder="Votre mot de passe"
 						style={{ width: '100%', padding: 8, boxSizing: 'border-box' }}
 					/>
 					{errors.password && <div style={{ color: 'crimson', fontSize: 13 }}>{errors.password}</div>}
@@ -93,7 +89,7 @@ export default function Login() {
 			</form>
 			{errors.server && <div style={{ color: 'crimson', marginTop: 12 }}>{errors.server}</div>}
 			<p>
-				Créer un compte? <Link to="/register">Inscription</Link>
+				<Link to="/register">Créer un compte?</Link>
 			</p>
 		</div>
 	)
