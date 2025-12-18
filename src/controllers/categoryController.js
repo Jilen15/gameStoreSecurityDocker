@@ -1,5 +1,9 @@
 import Category from "../models/Category.model.js";
 
+const categorySchema = Joi.object({
+  name: Joi.string().min(3).max(200).required()
+});
+
 class CategoryController {
     static async listCategories(req, res, next) {
         try {
@@ -25,6 +29,9 @@ class CategoryController {
 
     static async createCategory(req, res, next) {
         try {
+            const { error } = categorySchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+
             const { name } = req.body;
             const newCategory = await Category.create(name);
             return res.status(201).json(newCategory);
@@ -35,6 +42,9 @@ class CategoryController {
 
     static async updateCategory(req, res, next) {
         try {
+            const { error } = categorySchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+            
             const { id } = req.params;
             const { name } = req.body;
             const updatedCategory = await Category.update(Number(id), { name });

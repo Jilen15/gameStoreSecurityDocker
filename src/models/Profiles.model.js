@@ -19,8 +19,7 @@ const profileSchema = new mongoose.Schema({
     {
       gameId: {
         type: Number,
-        required: true,
-        unique: true,
+        required: true
       },
       note: {
         type: Number,
