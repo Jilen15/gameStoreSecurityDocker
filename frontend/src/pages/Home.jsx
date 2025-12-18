@@ -7,7 +7,9 @@ export default function Home() {
 	const [query, setQuery] = useState('')
 
 	useEffect(() => {
-		fetch('https://localhost:3000/api/games')
+		fetch('https://localhost:3000/api/games', {
+            credentials: 'include',
+        })
 			.then((res) => {
 				if (!res.ok) throw new Error('network')
 				return res.json()
