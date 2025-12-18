@@ -36,8 +36,9 @@ class CommentController {
     static async updateComment(req, res, next) {
         try {
             const { id } = req.params;
-            const { content, note, type } = req.body;
-            const updatedComment = await Comment.update(Number(id), { content, note, type });
+            const { content, note, type, id_user, id_game } = req.body;
+
+            const updatedComment = await Comment.update(id, { content, note, type, id_user, id_game });
             if (!updatedComment) {
                 return res.status(404).json({ error: "Commentaire non trouvé" });
             }
@@ -50,11 +51,11 @@ class CommentController {
     static async deleteComment(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await Comment.delete(Number(id));
+            const deleted = await Comment.delete(id);
 
             if (!deleted) return res.status(404).json({ message: "Jeu non trouvé" });
 
-            res.status(204).end();
+            return res.sendStatus(204);
         } catch (err) {
             next(err);
         }

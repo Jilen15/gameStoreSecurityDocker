@@ -28,7 +28,7 @@ class Comment{
     }
 
     static async delete(id) {
-        await pool.query("DELETE FROM comments WHERE id_comment = $1", [id]);
+        const result = await pool.query("DELETE FROM comments WHERE id_comment = $1", [id]);
         return result.rowCount;
     }
 }

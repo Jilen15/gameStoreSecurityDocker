@@ -50,11 +50,11 @@ class CategoryController {
     static async deleteCategory(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await Category.delete(Number(id));
+            const deleted = await Category.delete(id);
 
             if (!deleted) return res.status(404).json({ message: "Jeu non trouvé" });
 
-            res.status(204).end();
+            return res.sendStatus(204);
         } catch (err) {
             next(err);
         }
