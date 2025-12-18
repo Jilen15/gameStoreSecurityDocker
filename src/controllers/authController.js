@@ -69,14 +69,17 @@ class AuthController {
             const match = await AuthModel.comparePassword(password, user.password);
             if (!match) return res.status(401).json({ message: "Identifiants invalides" });
 
-            req.session.user = {
+            req.session.regenerate((err) => {
+              if (err) return res.status(500).json({ message: "Erreur serveur" });
+
+              req.session.user = {
                 id: user.id_user,
                 email: user.email,
                 role: user.rolename,
-            };
+              };
 
-            return res.status(200).json({ message: "Connexion réussie", role: user.rolename });
-
+              return res.status(200).json({ message: "Connexion réussie", role: user.rolename });
+            });
         } catch (err) {
             next(err);
         }
