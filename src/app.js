@@ -53,7 +53,8 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use("/login", authLimiter);
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
 
 //Configuration du rate limiter global
 const globalLimiter = rateLimit({
@@ -64,43 +65,38 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-//Redirection HTTP => HTTPS côté serveur
-app.use((req, res, next) => {
-  if (!req.secure) {
-    return res.redirect("https://" + req.headers.host + req.url);
-  }
-  next();
-});
-
-//Redirection HTTP => HTTPS côté navigateur et empêche toute utilisation de HTTP
-app.use(
-  helmet.hsts({
-    maxAge: 86400,
-    includeSubDomains: false,
-  })
-);
-
-//Empêche les injections XSS déguisées
-helmet.noSniff();
-//Empêche les attaques de clickjacking
-helmet.frameguard({ action: "deny" });
-//Limiter les informations de l'url en dehors du domaine
-helmet.referrerPolicy({policy: "strict-origin-when-cross-origin"});
-//Limiter les interactions avec d'autres sites
-helmet.crossOriginOpenerPolicy({policy: "same-origin"});
-//Restreint le chargement de ressources par un autre domaine
-helmet.crossOriginResourcePolicy({policy: "same-origin"});
-//Isole les données du site dans le navigateur
-helmet.originAgentCluster();
-//Empêche les injections XSS
+//Configuration générale de Helmet avec toutes les protections
 app.use(
   helmet({
+    //Redirection HTTP => HTTPS côté navigateur et empêche toute utilisation de HTTP
+    hsts: {
+      maxAge: 60 * 60,
+      includeSubDomains: false,
+      preload: false,
+    },
+    //Empêche les injections XSS déguisées
+    noSniff: true,
+    //Empêche les attaques de clickjacking
+    frameguard: { action: "deny" },
+    //Limiter les informations de l'url en dehors du domaine
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    //Limiter les interactions avec d'autres sites
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+    //Restreint le chargement de ressources par un autre domaine
+    crossOriginResourcePolicy: { policy: "same-origin" },
+    //Isole les données du site dans le navigateur
+    originAgentCluster: true,
+    //Empêche les injections XSS
     contentSecurityPolicy: {
       directives: {
-        "defaultSrc": ["'self'"],
-        "scriptSrc": ["'self'"],
-        "connectSrc": ["'self'"],
-        "styleSrc": ["'self'"]
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "https://localhost:5173",
+          "https://localhost:3000",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
       },
     },
   })
