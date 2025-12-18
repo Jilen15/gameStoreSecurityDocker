@@ -18,12 +18,21 @@ app.use(express.json());
 
 //Configuration de CORS
 const allowedOrigins = [
-  "https://localhost:3000"
+  "https://localhost:3000",
+  "https://localhost:5173"
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
       "Content-Type",
@@ -33,21 +42,27 @@ app.use(
   })
 );
 
-//Configuration du rate limiter
-const limiter = rateLimit({
-    windowMs: 60*1000,
-    max: 50,
-    message: {
-        status: 429,
-        message: "Trop de requêtes. Réessayez dans une minute."
-    },
-    standardHeaders: true,
-    legacyHeaders: false
+//Configuration du rate limiter pour l'authentification (plus strict)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    status: 429,
+    message: "Trop de tentatives de connexion. Réessayez plus tard.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
+app.use("/login", authLimiter);
 
-if (process.env.NODE_ENV !== "test") {
-    app.use(limiter);
-}
+//Configuration du rate limiter global
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(globalLimiter);
 
 //Redirection HTTP => HTTPS côté serveur
 app.use((req, res, next) => {
@@ -98,15 +113,16 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
-      ttl: 24 * 60 * 60,
+      ttl: 30 * 60,
     }),
     cookie: {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 30 * 60 * 1000,
     },
   })
 );
