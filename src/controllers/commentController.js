@@ -1,5 +1,13 @@
 import Comment from "../models/comment.model.js";
 
+const commentSchema = Joi.object({
+  content: Joi.string().min(1).max(500).required(),
+  note: Joi.number().min(1).required(),
+  type: Joi.string().min(1).max(50).required(),
+  id_user: Joi.number().integer().required(),
+  id_game: Joi.number().integer().required(),
+});
+
 class CommentController {
     static async listComments(req, res, next) {
         try {
@@ -25,6 +33,9 @@ class CommentController {
 
     static async createComment(req, res, next) {
         try {
+            const { error } = commentSchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+
             const { content, note, type, id_user, id_game } = req.body;
             const newComment = await Comment.create(content, note, type, id_user, id_game);
             return res.status(201).json(newComment);
@@ -35,6 +46,9 @@ class CommentController {
 
     static async updateComment(req, res, next) {
         try {
+            const { error } = commentSchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+
             const { id } = req.params;
             const { content, note, type, id_user, id_game } = req.body;
 

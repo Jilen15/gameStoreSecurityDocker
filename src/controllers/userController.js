@@ -1,5 +1,18 @@
 import User from "../models/User.model.js";
 
+const userSchema = Joi.object({
+  username: Joi.string().min(3).max(30).required(),
+  password: Joi.string()
+    .min(12)
+    .max(128)
+    .pattern(new RegExp("(?=.*[a-z])"))
+    .pattern(new RegExp("(?=.*[A-Z])"))
+    .pattern(new RegExp("(?=.*[0-9])"))
+    .pattern(new RegExp("(?=.*[!@#$%^&*])"))
+    .required(),
+  email: Joi.string().email().required()
+});
+
 class UserController{
 
     static async listUsers(req, res, next){
@@ -26,6 +39,9 @@ class UserController{
 
     static async updateUser(req, res, next){
         try {
+            const { error } = userSchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+
             const { id } = req.params;
             const { username, email, password } = req.body;
 

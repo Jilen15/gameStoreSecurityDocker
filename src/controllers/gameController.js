@@ -1,5 +1,12 @@
 import Game from "../models/game.model.js";
 
+const gameSchema = Joi.object({
+  name: Joi.string().min(1).max(100).required(),
+  price: Joi.number().min(1).required(),
+  description: Joi.string().min(1).max(500).required(),
+});
+
+
 class GameController {
     static async listGames(req, res, next) {
         try {
@@ -25,6 +32,9 @@ class GameController {
 
     static async createGame(req, res, next) {
         try {
+            const { error } = gameSchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+
             const { name, price, description } = req.body;
             const newGame = await Game.create(name, price, description);
             return res.status(201).json(newGame);
@@ -35,6 +45,9 @@ class GameController {
 
     static async updateGame(req, res, next) {
         try {
+            const { error } = gameSchema.validate(req.body);
+            if (error) return res.status(400).json({ error: error.details[0].message });
+            
             const { id } = req.params;
             const { name, price, description } = req.body;
             const updatedGame = await Game.update(Number(id), { name, price, description });
