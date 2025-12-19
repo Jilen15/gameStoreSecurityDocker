@@ -1,55 +1,24 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Profiles() {
   const [profiles, setProfiles] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     let mounted = true
 
-    async function load() {
-      try {
-        // Try to detect connected user by calling /api/auth/me (may not exist)
-        try {
-          const meRes = await fetch('https://localhost:3000/api/auth/me', { credentials: 'include' })
-          if (meRes.ok) {
-            const meBody = await meRes.json().catch(() => ({}))
-            if (meBody && meBody.user && meBody.user.id) {
-              if (!mounted) return
-              setCurrentUser(meBody.user)
-              // load only this user's profile
-              const pRes = await fetch(`https://localhost:3000/api/profiles/${meBody.user.id}`, { credentials: 'include' })
-              if (pRes.ok) {
-                const profile = await pRes.json()
-                // try to fetch user details
-                let userInfo = meBody.user
-                try {
-                  const uRes = await fetch(`https://localhost:3000/api/users/${meBody.user.id}`, { credentials: 'include' })
-                  if (uRes.ok) {
-                    const ub = await uRes.json().catch(() => ({}))
-                    userInfo = ub.user ?? userInfo
-                  }
-                } catch (e) {}
-                if (!mounted) return
-                setProfiles([{ profile, user: userInfo }])
-                return
-              }
-            }
-          }
-        } catch (e) {
-          // ignore - /api/auth/me might not exist or fail
-        }
-
-        // Fallback: load all profiles
-        const res = await fetch('https://localhost:3000/api/profiles', { credentials: 'include' })
+    fetch('https://localhost:3000/api/profiles', { credentials: 'include' })
+      .then(async (res) => {
         if (!res.ok) {
           const body = await res.json().catch(() => ({}))
           throw new Error(body.message || 'Erreur lors du chargement des profils')
         }
-        const data = await res.json()
-        if (!Array.isArray(data)) throw new Error('Données de profils invalides')
+        return res.json()
+      })
+      .then(async (data) => {
+        if (!mounted) return
 
         const enriched = await Promise.all(
           data.map(async (p) => {
@@ -64,17 +33,13 @@ export default function Profiles() {
           }),
         )
 
-        if (!mounted) return
         setProfiles(enriched)
-      } catch (err) {
-        console.error('Failed to load profiles/auth:', err)
+      })
+      .catch((err) => {
+        console.error('Failed to load profiles:', err)
         setError(err.message || 'Erreur réseau')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    }
-
-    load()
+      })
+      .finally(() => setLoading(false))
 
     return () => {
       mounted = false
@@ -86,22 +51,21 @@ export default function Profiles() {
 
   return (
     <div>
-      <h1>{currentUser ? `Bonjour ${currentUser.username ?? currentUser.email ?? currentUser.id}` : ''}</h1>
+      <h1>Mon Profil</h1>
 
       {profiles.length === 0 && <div style={{ color: '#666' }}>Aucun profil trouvé.</div>}
 
       <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
         {profiles.map(({ profile, user }) => (
-          <div key={profile?.userId ?? user?.id} style={{ border: '1px solid #ddd', padding: 12, borderRadius: 8, background: '#fff' }}>
+          <div key={profile.userId} style={{ border: '1px solid #ddd', padding: 12, borderRadius: 8, background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <strong>{user?.username ?? `Utilisateur ${profile?.userId ?? user?.id}`}</strong>
-                <div style={{ fontSize: 13, color: '#666' }}>{user?.email ?? ''}</div>
+                <strong>{user.username ?? `Utilisateur ${profile.userId}`}</strong>
+                <div style={{ fontSize: 13, color: '#666' }}>{user.email ?? ''}</div>
               </div>
-              <div />
             </div>
 
-            {Array.isArray(profile?.gamesList) && profile.gamesList.length > 0 ? (
+            {Array.isArray(profile.gamesList) && profile.gamesList.length > 0 ? (
               <div style={{ marginTop: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600 }}>Jeux:</div>
                 <ul style={{ margin: 6 }}>
@@ -114,7 +78,7 @@ export default function Profiles() {
               <div style={{ marginTop: 8, color: '#666' }}>Aucun jeu dans la liste.</div>
             )}
 
-            {Array.isArray(profile?.commentHistory) && profile.commentHistory.length > 0 ? (
+            {Array.isArray(profile.commentHistory) && profile.commentHistory.length > 0 ? (
               <div style={{ marginTop: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600 }}>Commentaires:</div>
                 <ul style={{ margin: 6 }}>
@@ -132,4 +96,3 @@ export default function Profiles() {
     </div>
   )
 }
-        
